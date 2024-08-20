@@ -4,6 +4,15 @@ This repo is used for template files / files that are shared across HYKE's organ
 
 ### Contents
 
+#### Workflows
+
+Template files for setting up workflows
+
+- `.github/workflows/`
+- `dependencies.repos` : example file for how to list repositories required for build testing this one
+
+#### Other
+
 - `.github/pull_request_template.md` : copy this path+file into your repository and it will be used as a template for new PRs to master
 
 
