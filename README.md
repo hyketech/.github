@@ -1,5 +1,5 @@
-# Hyke
+# hyke/.github
 
-Welcome to Hyke's codebase
+This repo is used for template files / files that are shared across HYKE's organization repositories.
 
-If you add a profile/README.md, it will be visible on HYKE's *public* organization profile.
+- If you add a file `profile/README.md`, it will be visible on HYKE's *public* organization profile.
