@@ -1,0 +1,90 @@
+name: build-test-dependencies
+# This is a template workflow to be run using Github's runners
+# Copy and paste it into your repository under .github/workflows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    # Awaiting FIX for GH Actions  Issue #1978
+    # container:
+    #   image: ${{ vars.CI_BASE_IMAGE  }}
+    #   credentials:
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_TOKEN }}
+
+    steps:
+      - name: Define env variable for repository path
+        run: |
+          echo "WS_SRC=test_ws/src" >> $GITHUB_ENV
+          echo "REPO_PATH=test_ws/src/${{ github.event.repository.name }}" >> $GITHUB_ENV
+
+      - name: Checkout main repo
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.REPO_PATH }}
+          
+      - name: Check for dependencies.repos file
+        id: check-file
+        run: |
+          if [ ! -f ${{ env.REPO_PATH }}/dependencies.repos ]; then
+            echo "dependencies.repos does not exist, exiting..."
+            exit 0
+          fi
+
+      - name: Get current branch name
+        id: branch-name
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "On branch: $BRANCH_NAME"
+
+
+      - name: Setup SSH for git access
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Import dependency repos
+        run: |
+          pip install vcstool
+          vcs import ${{ env.WS_SRC }} < ${{ env.REPO_PATH }}/dependencies.repos
+          cd ${{ env.WS_SRC }}
+          for d in */ ; do
+            cd "$d"
+            git checkout ${{ env.BRANCH_NAME }} || git checkout master
+            cd ..
+          done
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Pull base image
+        run: docker pull ${{ vars.CI_BASE_IMAGE }}
+
+      - name: Build Testing and Unit Testing
+        env:
+            ROS_DISTRO: ${{ vars.ROS_DISTRO }}  
+            BASE_IMAGE: ${{ vars.CI_BASE_IMAGE }}
+        run: |
+          docker run -v $(pwd)/${{ env.WS_SRC }}:/autoware/src/hyke $BASE_IMAGE /bin/bash -c "\
+          source /opt/ros/$ROS_DISTRO/setup.bash \
+          && source /autoware/install/setup.bash \
+          && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release \
+          && source /autoware/install/setup.bash
+          && colcon test \"
+        #  && colcon test-result --verbose"

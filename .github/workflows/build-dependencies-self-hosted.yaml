@@ -1,0 +1,90 @@
+name: build-test-dependencies-self-hosted
+# This is a template workflow to be run using Hyke's self-hosted runners
+# Copy and paste it into your repository under .github/workflows
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-dependencies-self-hosted:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Define env variables for reused path
+        run: |
+          echo "WS_SRC=/autoware/src/hyke" >> $GITHUB_ENV
+          echo "REPO_PATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
+
+      - name: Check for dependencies.repos file
+        id: check-file
+        run: |
+          if [ ! -f ${{ env.REPO_PATH }}/dependencies.repos ]; then
+            echo "dependencies.repos does not exist, exiting..."
+            exit 0
+          fi
+      
+      - name: Get current branch name
+        id: branch-name
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "On branch: $BRANCH_NAME"
+
+      - name: Setup SSH for git access
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Import dependency repos and checkout correct branch
+        run: |
+          rm -rf ${{ env.WS_SRC }}
+          mkdir -p ${{ env.WS_SRC }}
+          vcs import ${{ env.WS_SRC }} < ${{ env.REPO_PATH }}/dependencies.repos
+          cd ${{ env.WS_SRC }}
+          for d in */ ; do
+            cd "$d"
+            git checkout ${{ env.BRANCH_NAME }} || git checkout master
+            cd ..
+          done
+
+      - name: Move the repository to src directory
+        run: |
+          mkdir -p ${{ env.WS_SRC }}/${{ github.event.repository.name }}
+          cp -a ${{ env.REPO_PATH }}/. ${{ env.WS_SRC }}/${{ github.event.repository.name }}/
+          echo "REPO_PATH=${{ env.WS_SRC }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
+
+
+      - name: Build Testing
+        env:
+            ROS_DISTRO: ${{ vars.ROS_DISTRO }}  
+        run: |
+          cd /autoware
+          source /opt/ros/$ROS_DISTRO/setup.bash 
+          source install/setup.bash 
+          colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --cmake-clean-cache
+          source install/setup.bash
+
+      - name: Unit testing
+        run: |
+          cd /autoware
+          source install/setup.bash 
+          colcon test-result --delete-yes
+          colcon test 
+        # colcon test-result --verbose
