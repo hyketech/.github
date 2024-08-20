@@ -1,4 +1,4 @@
-### Hyke autonomy PR Template [^1]
+### Hyke PR Template [^1]
 
 #### Main description
 
