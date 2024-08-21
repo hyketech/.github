@@ -18,4 +18,4 @@ Template files for setting up workflows
 
 ---
 
-Note:  If you add a file `profile/README.md`, it will be visible on HYKE's *public* organization profile.
+*Note:*  Hyke's public README at `profile/README.md` is visible on the organization profile.
