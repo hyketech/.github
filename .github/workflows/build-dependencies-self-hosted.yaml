@@ -1,14 +1,18 @@
-name: build-test-dependencies-self-hosted
+name: build-dependencies-self-hosted
 # This is a template workflow to be run using Hyke's self-hosted runners
 # Copy and paste it into your repository under .github/workflows
 
+# This workflow pulls dependencies, checks out matching branch, and does build testing on all 
+
+
+# Uncomment the lines below to enable pipeline on PRs / push to master branch
 on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
+  # pull_request:
+  #   branches:
+  #     - master
+  # push:
+  #   branches:
+  #     - master
   workflow_dispatch:
 
 jobs:
@@ -81,10 +85,11 @@ jobs:
           colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --cmake-clean-cache
           source install/setup.bash
 
-      - name: Unit testing
-        run: |
-          cd /autoware
-          source install/setup.bash 
-          colcon test-result --delete-yes
-          colcon test 
-        # colcon test-result --verbose
+      # Use unit-test-self-hosted workflow instead
+      # - name: Unit testing
+      #   run: |
+      #     cd /autoware
+      #     source install/setup.bash 
+      #     colcon test-result --delete-yes
+      #     colcon test 
+      #   # colcon test-result --verbose

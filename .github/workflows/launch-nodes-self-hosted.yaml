@@ -1,0 +1,49 @@
+name: launch-nodes-self-hosted
+# This is a template workflow to be run using Hyke's self-hosted runners
+# Copy and paste it into your repository under .github/workflows
+
+
+# This workflow spins up nodes using the CICD launch file for 60s
+# Requires: hyke_autonomy_launch repo
+
+
+# Uncomment triggers below to run it when build-dependencies workflow completes 
+on:
+  # workflow_run:
+  #   workflows: ["build-dependencies-self-hosted"] 
+  #   types:
+  #     - completed
+  workflow_dispatch:
+
+jobs:
+  launch-nodes-self-hosted:
+    runs-on: self-hosted
+    # Uncomment following line run it when build-dependencies completes successfully
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: build-master
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup env and launch nodes
+        env:
+            ROS_DISTRO: ${{ vars.ROS_DISTRO }}  
+            LAUNCH_PKG: hyke_autonomy_launch
+            LAUNCH_FILE: hyke_autonomy.cicd.launch.xml
+        shell: /usr/bin/bash {0}  # Remove -e to handle errors manually
+        run: |
+          cd /autoware
+          source /opt/ros/$ROS_DISTRO/setup.bash
+          source install/setup.bash
+          
+          # Launch and allow to run for 60 seconds, success if it times out
+          timeout --preserve-status 60s ros2 launch $LAUNCH_PKG $LAUNCH_FILE
+          exit_status=$?
+          if [ $exit_status -eq 124 ] || [ $exit_status -eq 143 ]; then
+            echo "Timeout reached, process completed successfully."
+            exit 0
+          else
+            echo "Process exited before timeout with status: $exit_status"
+            exit 1
+          fi

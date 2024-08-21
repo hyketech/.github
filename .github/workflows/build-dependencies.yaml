@@ -1,4 +1,4 @@
-name: build-test-dependencies
+name: build-dependencies
 # This is a template workflow to be run using Github's runners
 # Copy and paste it into your repository under .github/workflows
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
+  build-dependencies:
     runs-on: ubuntu-latest
     
     # Awaiting FIX for GH Actions  Issue #1978
