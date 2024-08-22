@@ -9,7 +9,6 @@ What does this PR do? Specify type with `x`
 - [ ] ⚡ improvements
 - [ ] 🔨 refactor
 - [ ] :gear: ci/cd
-- [ ] 📝 docs  
 - [ ] 🌊 other
 
 #### Changelog
