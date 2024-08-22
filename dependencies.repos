@@ -1,9 +1,0 @@
-repositories:
-  hyke_autoware_msgs:
-    type: git
-    url: git@github.com:hyketech/hyke_autoware_msgs.git
-    version: master
-  hyke_utils:
-    type: git
-    url: git@github.com:hyketech/hyke_utils.git
-    version: master

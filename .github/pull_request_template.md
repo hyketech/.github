@@ -1,33 +1,33 @@
-### Hyke PR Template [^1]
+### PR Template [^1]
 
 #### Main description
 
-What does this PR do? Specify type below
+What does this PR do? Specify type with `x`
 
 - [ ] 🔥 feature
-- [ ] 🪲 bugfix
-- [ ] 🧯 hotfix
-- [ ] ⚡ performance improvements
+- [ ] 🪲 bugfix / hotfix 🧯
+- [ ] ⚡ improvements
 - [ ] 🔨 refactor
+- [ ] :gear: ci/cd
 - [ ] 📝 docs  
 - [ ] 🌊 other
 
 #### Changelog
 
-- List changes as bullet points
+- list changes as bullet points
 
 ---
 
 #### Tests & Checks performed
 
-- Specify tests (not) done 
+- specify tests (not) done
 
 ---
 
 #### Other
 
-- [Link to ClickUp task](https://app.clickup.com/t/TaskID)
-- Additional notes or comments about the pull request or the task.
+- Link to task: [ClickUp](https://app.clickup.com/t/TaskID)
+- other notes about the PR or  task.
 
 
 [^1]: This is a basic template for PRs which serves only as a guide.
