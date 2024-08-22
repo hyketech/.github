@@ -8,7 +8,7 @@ What does this PR do? Specify type below
 - [ ] 🪲 bugfix
 - [ ] 🧯 hotfix
 - [ ] ⚡ performance improvements
-- [ ] 🔨 refactor 
+- [ ] 🔨 refactor
 - [ ] 📝 docs  
 - [ ] 🌊 other
 
