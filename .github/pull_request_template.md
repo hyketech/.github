@@ -5,7 +5,7 @@
 What does this PR do? Specify type with `x`
 
 - [ ] 🔥 feature
-- [ ] 🪲 bugfix / hotfix 🧯
+- [ ] 🪲 bugfix 
 - [ ] ⚡ improvements
 - [ ] 🔨 refactor
 - [ ] :gear: ci/cd
