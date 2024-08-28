@@ -1,13 +1,7 @@
-### PR Template [^1]
-
 #### Main description
-
-What does this PR do? Specify type with `x`
 
 - [ ] 🔥 feature
 - [ ] 🪲 bugfix 
-- [ ] ⚡ improvements
-- [ ] 🔨 refactor
 - [ ] :gear: ci/cd
 - [ ] 🌊 other
 
@@ -26,7 +20,6 @@ What does this PR do? Specify type with `x`
 #### Other
 
 - Link to task: [ClickUp](https://app.clickup.com/t/TaskID)
-- other notes about the PR or  task.
 
 
 [^1]: This is a basic template for PRs which serves only as a guide.
