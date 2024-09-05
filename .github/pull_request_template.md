@@ -2,7 +2,7 @@
 
 - [ ] 🔥 feature
 - [ ] 🪲 bugfix 
-- [ ] :gear: ci/cd
+- [ ] ⚙️ ci/cd
 - [ ] 🌊 other
 
 #### Changelog
